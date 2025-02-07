@@ -1,0 +1,32 @@
+# Use the official PHP image with Apache support
+FROM php:8.0-apache
+
+# Install dependencies for PHPMailer and Apache
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd
+
+# Install Composer (PHP dependency manager)
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Set the working directory
+WORKDIR /var/www/html
+
+# Copy your Composer file (if it exists) and install dependencies
+COPY composer.json /var/www/html/
+COPY composer.lock /var/www/html/
+
+# Install PHP dependencies via Composer (like PHPMailer)
+RUN composer install
+
+# Copy the rest of the application files
+COPY . /var/www/html/
+
+# Expose port 80 to make the web server accessible
+EXPOSE 80
+
+# Start Apache in the foreground
+CMD ["apache2-foreground"]
