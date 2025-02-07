@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Public IP</title>
+</head>
+<body>
+    <script>
+        // Fetch the public IP address using ipify API
+        fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            let userIP = data.ip;  // Get the public IP address
+
+            // Send the IP address to your server (PHP example)
+            fetch('save_ip.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'ip=' + userIP
+            })
+            .then(response => response.text())
+            .then(result => console.log(result)); // Handle the result if needed
+        })
+        .catch(error => console.error('Error fetching IP:', error));
+    </script>
+</body>
+</html>
